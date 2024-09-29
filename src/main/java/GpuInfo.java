@@ -6,23 +6,19 @@ import java.util.List;
 
 public class GpuInfo {
 
-    public static void main(String[] args) {
-        // Initialize SystemInfo object
-        SystemInfo systemInfo = new SystemInfo();
+    public static class GpuOshiMonitor {
+        public static List<GraphicsCard> getGraphicsCards() {
+            SystemInfo systemInfo = new SystemInfo();
+            return systemInfo.getHardware().getGraphicsCards();
+        }
 
-        // Get hardware abstraction layer
-        HardwareAbstractionLayer hardware = systemInfo.getHardware();
-
-        // Get a list of all graphics cards (GPUs)
-        List<GraphicsCard> graphicsCards = hardware.getGraphicsCards();
-
-        // Loop through each GPU and print its details
-        for (GraphicsCard gpu : graphicsCards) {
-            System.out.println("GPU Name: " + gpu.getName());
-            System.out.println("GPU Vendor: " + gpu.getVendor());
-            System.out.println("GPU Version: " + gpu.getVersionInfo());
-            System.out.println("GPU VRAM: " + gpu.getVRam() / (1024 * 1024) + " MB");
-            System.out.println("-----------------------------");
+        public static void main(String[] args) {
+            List<GraphicsCard> gpus = getGraphicsCards();
+            for (GraphicsCard gpu : gpus) {
+                System.out.println("GPU Name: " + gpu.getName());
+                System.out.println("GPU Vendor: " + gpu.getVendor());
+                System.out.println("GPU VRAM: " + gpu.getVRam() / (1024 * 1024) + " MB");
+            }
         }
     }
 }
