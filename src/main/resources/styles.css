@@ -1,0 +1,57 @@
+/* Background of the main UI */
+.root {
+    -fx-background-color: #2d2d2d; /* Dark gray for background */
+}
+
+/* Style for labels */
+.label {
+    -fx-font-size: 14px;
+    -fx-text-fill: white; /* White text */
+    -fx-font-family: 'Arial';
+}
+
+/* Style for buttons */
+.button {
+    -fx-background-color: #900000, linear-gradient(#d93030, #900000); /* Red gradient for button */
+    -fx-text-fill: white;
+    -fx-font-family: 'Arial';
+    -fx-border-color: red; /* Red border */
+    -fx-border-width: 2px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-padding: 5px 10px;
+}
+
+/* Toggle button style */
+.toggle-button {
+    -fx-background-color: #600000; /* Dark red background */
+    -fx-text-fill: white;
+    -fx-border-color: #d93030; /* Light red border */
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+}
+
+/* BorderPane, VBox, or GridPane styles for containers */
+.pane {
+    -fx-background-color: rgba(0, 0, 0, 0.7); /* Slightly transparent black */
+    -fx-border-color: red;
+    -fx-border-width: 3px;
+    -fx-border-radius: 10px;
+    -fx-padding: 10px;
+}
+
+/* Tabs */
+.tab-pane .tab-header-area {
+    -fx-background-color: #900000; /* Red background for the tab area */
+}
+
+.tab-pane .tab {
+    -fx-background-color: #600000; /* Dark red for the tab */
+    -fx-text-fill: white; /* White text */
+    -fx-border-color: #d93030; /* Red border for tab */
+}
+
+.tab-pane .tab:selected {
+    -fx-background-color: #d93030; /* Lighter red for selected tab */
+    -fx-text-fill: white;
+}
