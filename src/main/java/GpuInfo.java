@@ -1,24 +1,22 @@
 import oshi.SystemInfo;
 import oshi.hardware.GraphicsCard;
 import oshi.hardware.HardwareAbstractionLayer;
+import oshi.hardware.Sensors;
 
 import java.util.List;
 
 public class GpuInfo {
 
-    public static class GpuOshiMonitor {
-        public static List<GraphicsCard> getGraphicsCards() {
-            SystemInfo systemInfo = new SystemInfo();
-            return systemInfo.getHardware().getGraphicsCards();
-        }
+    public static String getGpuInfo() {
+        SystemInfo systemInfo = new SystemInfo();
+        List<GraphicsCard> gpus = systemInfo.getHardware().getGraphicsCards();
+        Sensors sensors = systemInfo.getHardware().getSensors();
+        StringBuilder gpuInfo = new StringBuilder("GPU Information:\n");
+        for (GraphicsCard gpu : gpus) {
+            gpuInfo.append("GPU Name: ").append(gpu.getName()).append("\n");
+            gpuInfo.append("VRAM: ").append(gpu.getVRam() / (1024 * 1024)).append(" MB\n");
 
-        public static void main(String[] args) {
-            List<GraphicsCard> gpus = getGraphicsCards();
-            for (GraphicsCard gpu : gpus) {
-                System.out.println("GPU Name: " + gpu.getName());
-                System.out.println("GPU Vendor: " + gpu.getVendor());
-                System.out.println("GPU VRAM: " + gpu.getVRam() / (1024 * 1024) + " MB");
-            }
         }
+        return gpuInfo.toString();
     }
 }

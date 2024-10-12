@@ -1,6 +1,6 @@
 /* Background of the main UI */
 .root {
-    -fx-background-color: #2d2d2d; /* Dark gray for background */
+    -fx-background-color: #5F5454; /* Dark gray for background */
 }
 
 /* Style for labels */
@@ -40,18 +40,66 @@
     -fx-padding: 10px;
 }
 
-/* Tabs */
-.tab-pane .tab-header-area {
-    -fx-background-color: #900000; /* Red background for the tab area */
+.tab-pane .tab-header-background {
+    -fx-background-color: #3b3b3b; /* DARK GREY BEHIND TABS */
 }
 
-.tab-pane .tab {
-    -fx-background-color: #600000; /* Dark red for the tab */
-    -fx-text-fill: white; /* White text */
-    -fx-border-color: #d93030; /* Red border for tab */
+/* Default style for all tabs */
+.tab {
+    -fx-background-color: #570e0e;  /* Dark red background for inactive tabs */
+    -fx-text-fill: black;           /* Black text color for better readability */
+    -fx-font-size: 16px;            /* Larger font size for better visibility */
+    -fx-padding: 10 20 10 20;       /* Add some padding around the text */
 }
 
-.tab-pane .tab:selected {
-    -fx-background-color: #d93030; /* Lighter red for selected tab */
-    -fx-text-fill: white;
+/* Styling for the text to have a white outline */
+.tab .text {
+    -fx-text-fill: black;           /* BLACK TEXT*/
+    -fx-stroke: white;              /* WHITE TEXT */
+    -fx-stroke-width: 1;            /* THICKNESS OF THE OUTLINE */
 }
+
+/* Styling for the selected tab */
+.tab:selected {
+    -fx-background-color: #ff0000;  /* SELECTED TAB BRIGHT RED */
+    -fx-text-fill: black;
+    -fx-focus-color: transparent;  /* Remove the blue focus color */
+    -fx-faint-focus-color: transparent; /* Remove the faint focus color */
+}
+
+.tab:selected .text {
+    -fx-stroke: white;              /* Keep the white outline */
+    -fx-stroke-width: 1.5;          /* Slightly thicker outline for the active tab */
+    -fx-text-fill: black;
+}
+
+/* HOVER OVER TABS */
+.tab:hover {
+    -fx-background-color: #8b0000;  /* Darker red when hovering over a tab */
+}
+.content-area {
+    -fx-padding: 15;
+    -fx-background-color: #3b3b3b; /* Slightly lighter background for content */
+    -fx-border-radius: 5;
+}
+
+
+/* Custom styling for the Settings tab */
+.settings-tab {
+    -fx-background-color: #570e0e; /* Make the Settings tab darker */
+    -fx-font-size: 16px;           /* Font size for readability */
+}
+
+.settings-tab:selected {
+    -fx-background-color: #ff0000; /* Orange color for selected Settings tab */
+    -fx-text-fill: black;          /* Black text for readability */
+}
+
+.settings-tab .text {
+    -fx-stroke: white;             /* Keep the white outline for Settings */
+    -fx-stroke-width: 1;           /* Set the outline thickness */
+}
+
+
+
+
