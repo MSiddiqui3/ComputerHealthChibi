@@ -1,6 +1,5 @@
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -10,12 +9,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import oshi.SystemInfo;
-import oshi.hardware.GraphicsCard;
-import com.sun.management.OperatingSystemMXBean;
-
-import java.lang.management.ManagementFactory;
-import java.util.List;
 
 public class SystemInfoUI extends Application {
 
@@ -23,187 +16,128 @@ public class SystemInfoUI extends Application {
     Label gpuLabel = new Label();
     Label ramLabel = new Label();
     Label cpuLabel = new Label("CPU Usage:");
+    Label networkLabel = new Label();
+    Label storageLabel = new Label();
 
-    // ImageView to display images at the bottom
+    HardwareMonitorData hardwareMonitorData = new HardwareMonitorData();
+
+    // Chibi Avatar
     ImageView imageView = new ImageView();
 
-    // Timeline for real-time monitoring
-    Timeline timeline;
+    // Timeline for real-time monitoring (initialize it here)
+    Timeline timeline = new Timeline();
+
+    // ScrollPane to hold network info
+    ScrollPane networkScrollPane = new ScrollPane();
+
+    ChibiSettings chibiSettings;
 
     @Override
     public void start(Stage primaryStage) {
-        // Initial text for system information labels
-        gpuLabel.setText(getGpuInfo());
-        ramLabel.setText(getRamInfo());
-        cpuLabel.setText(getCpuUsage());
 
-        // On/Off buttons for system monitoring
+        // Initialize ChibiSettings with the imageView
+        chibiSettings = new ChibiSettings(imageView);
+        chibiSettings.initializeChibi();
+        chibiSettings.addSwayingAnimation();
+
+        // SETUP TABS FOR THE MAIN COMPONENTS
+        TabPane tabPane = new TabPane();
+
+        // GPU, CPU, RAM, Storage Tabs
+        Tab gpuTab = new Tab("GPU", new VBox(gpuLabel));
+        gpuTab.setClosable(false);
+        Tab cpuTab = new Tab("CPU", new VBox(cpuLabel));
+        cpuTab.setClosable(false);
+        Tab ramTab = new Tab("RAM", new VBox(ramLabel));
+        ramTab.setClosable(false);
+        Tab storageTab = new Tab("STORAGE", new VBox(storageLabel));
+        storageTab.setClosable(false);
+
+        String gpuTemperature = hardwareMonitorData.getGpuTemperature();
+        String gpuFanSpeed = hardwareMonitorData.getGpuFanSpeed();
+        String cpuVoltage = hardwareMonitorData.getCpuVoltage();
+        initializeSystemInfo();
+
+        // Network Tab - with ScrollPane
+        networkScrollPane.setContent(networkLabel);
+        networkScrollPane.setFitToWidth(true);
+        networkScrollPane.setPrefHeight(300);
+        Tab networkTab = new Tab("NETWORK", networkScrollPane);
+        networkTab.setClosable(false);
+        tabPane.getTabs().addAll(cpuTab, gpuTab, ramTab, storageTab, networkTab);
+
+        // Settings Tab for Chibi Appearance
+        Tab settingsTab = new Tab("Settings");
+        ComboBox<String> chibiComboBox = new ComboBox<>();
+        chibiComboBox.getItems().addAll("Chibi 1", "Chibi 2", "Chibi 3");
+        chibiComboBox.setValue("Chibi 1");
+
+        chibiComboBox.setOnAction(event -> {
+            String selectedChibi = chibiComboBox.getValue();
+            chibiSettings.changeChibiAppearance(selectedChibi);
+        });
+
+        settingsTab.setContent(new VBox(new Label("Select Chibi Appearance:"), chibiComboBox));
+        settingsTab.setClosable(false);
+        tabPane.getTabs().add(settingsTab);
+
+        // SETUP LAYOUT
+        BorderPane root = new BorderPane();
+        root.setTop(tabPane);
+        root.setCenter(imageView);
+
+        // On/Off Buttons
         Button onButton = new Button("On");
         Button offButton = new Button("Off");
 
+        // Add action to "On" button
         onButton.setOnAction(event -> {
-            gpuLabel.setText(getGpuInfo());
-            ramLabel.setText(getRamInfo());
-            cpuLabel.setText(getCpuUsage());
-            timeline.play(); // Resume monitoring
+            gpuLabel.setText(GpuInfo.getGpuInfo() +"Temperature: " + gpuTemperature +"\n" + "Fan Speed: " + gpuFanSpeed);
+            ramLabel.setText(RamInfo.getRamInfo());
+            cpuLabel.setText(CpuInfo.getCpuInfo()  + "CPU Voltage: " + cpuVoltage);
+            storageLabel.setText(StorageInfo.getStorageInfo());
+            //networkLabel.setText(NetworkInfo.getNetworkInfo());
+            timeline.play();  // Starts the timeline updates
         });
 
+        // Add action to "Off" button
         offButton.setOnAction(event -> {
-            gpuLabel.setText("System Monitoring Off");
-            ramLabel.setText("System Monitoring Off");
-            cpuLabel.setText("System Monitoring Off");
-            timeline.pause(); // Pause monitoring
+            gpuLabel.setText("GPU System Monitoring Off");
+            ramLabel.setText("RAM System Monitoring Off");
+            cpuLabel.setText("CPU System Monitoring Off");
+            storageLabel.setText("Storage Monitoring Off");
+            networkLabel.setText("Network Monitoring Off");
+            timeline.stop();  // Stops the timeline updates
         });
 
-        // Set default image when the application starts
-        imageView.setImage(new Image(getClass().getResource("/images/chibi1.png").toExternalForm()));
-        imageView.setFitHeight(150); // Set height for the image
-        imageView.setPreserveRatio(true); // Maintain aspect ratio
+        // Add buttons to the bottom
+        root.setBottom(new VBox(10, onButton, offButton));
 
-        // Add the animation for swaying from side to side
-        addSwayingAnimation(imageView);
-
-        // Menu Bar and Menu Items
-        MenuBar menuBar = new MenuBar();
-
-        // File menu with exit option
-        Menu fileMenu = new Menu("File");
-        MenuItem exitMenuItem = new MenuItem("Exit");
-        fileMenu.getItems().add(exitMenuItem);
-
-        // Edit menu for future avatar customization
-        Menu editMenu = new Menu("Edit");
-        MenuItem customizeChibiMenuItem = new MenuItem("Customize Chibi");
-        editMenu.getItems().add(customizeChibiMenuItem);
-
-        // Add action to the Customize Chibi option
-        customizeChibiMenuItem.setOnAction(event -> openChibiSelectionDialog());
-
-        // Help menu with about option
-        Menu helpMenu = new Menu("Help");
-        MenuItem aboutMenuItem = new MenuItem("About");
-        helpMenu.getItems().add(aboutMenuItem);
-
-        // Add menus to the menu bar
-        menuBar.getMenus().addAll(fileMenu, editMenu, helpMenu);
-
-        // Vertical layout for system info and buttons
-        VBox layout = new VBox(10);
-        layout.getChildren().addAll(gpuLabel, ramLabel, cpuLabel, onButton, offButton);
-
-        // Add the ImageView at the bottom
-        layout.getChildren().add(imageView);
-
-        // BorderPane layout for MenuBar at the top and the VBox layout in the center
-        BorderPane borderPane = new BorderPane();
-        borderPane.setTop(menuBar); // Set the menu bar at the top
-        borderPane.setCenter(layout); // Set the system information in the center
-
-        // Create the scene
-        Scene scene = new Scene(borderPane, 600, 500);
+        // SCENE SETUP
+        Scene scene = new Scene(root, 800, 600);
         scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
-
+        primaryStage.setTitle("Computer Health Chibi");
         primaryStage.setScene(scene);
-        primaryStage.setTitle("System Info with Menu and Image");
         primaryStage.show();
 
-        // Real-time updates for system information every 5 seconds
-        timeline = new Timeline(new KeyFrame(Duration.seconds(5), event -> {
-            gpuLabel.setText(getGpuInfo());
-            ramLabel.setText(getRamInfo());
-            cpuLabel.setText(getCpuUsage());
+        // REALTIME UPDATES
+        timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(2), event -> {
+            gpuLabel.setText(GpuInfo.getGpuInfo() + "Temperature: " + gpuTemperature + "\n" + "Fan Speed: " + gpuFanSpeed);
+            ramLabel.setText(RamInfo.getRamInfo());
+            cpuLabel.setText(CpuInfo.getCpuInfo() + "CPU Voltage: " + cpuVoltage);
+            storageLabel.setText(StorageInfo.getStorageInfo());
+            networkLabel.setText(NetworkInfo.getNetworkInfo());
         }));
         timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.play();  // Start the timeline when the application launches
     }
 
-    // Method to add swaying animation to the chibi image
-    private void addSwayingAnimation(ImageView imageView) {
-        // Create a TranslateTransition for horizontal swaying
-        TranslateTransition sway = new TranslateTransition(Duration.millis(1000), imageView);
-        sway.setFromX(-20);  // Move 20 pixels left
-        sway.setToX(20);     // Move 20 pixels right
-        sway.setAutoReverse(true); // Automatically reverse after each cycle
-        sway.setCycleCount(TranslateTransition.INDEFINITE); // Repeat indefinitely
-        sway.play();  // Start the animation
-    }
-
-    // Method to open a dialog for chibi selection
-    private void openChibiSelectionDialog() {
-        // Create a dialog for selecting chibi avatars
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle("Customize Chibi");
-
-        // Create radio buttons for the three chibi images
-        ToggleGroup toggleGroup = new ToggleGroup();
-        RadioButton chibi1Option = new RadioButton("Chibi 1");
-        RadioButton chibi2Option = new RadioButton("Chibi 2");
-        RadioButton chibi3Option = new RadioButton("Chibi 3");
-
-        chibi1Option.setToggleGroup(toggleGroup);
-        chibi2Option.setToggleGroup(toggleGroup);
-        chibi3Option.setToggleGroup(toggleGroup);
-
-        // Set the initial selection to Chibi 1
-        chibi1Option.setSelected(true);
-
-        // VBox to hold the radio buttons
-        VBox dialogContent = new VBox(10, chibi1Option, chibi2Option, chibi3Option);
-        dialog.getDialogPane().setContent(dialogContent);
-
-        // Add OK and Cancel buttons
-        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-
-        // Show the dialog and wait for the result
-        dialog.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                // Check which option was selected and change the image
-                if (chibi1Option.isSelected()) {
-                    imageView.setImage(new Image(getClass().getResource("/images/chibi1.png").toExternalForm()));
-                } else if (chibi2Option.isSelected()) {
-                    imageView.setImage(new Image(getClass().getResource("/images/chibi2.png").toExternalForm()));
-                } else if (chibi3Option.isSelected()) {
-                    imageView.setImage(new Image(getClass().getResource("/images/chibi3.png").toExternalForm()));
-                }
-            }
-        });
-    }
-
-    // Method to get GPU info using OSHI
-    public String getGpuInfo() {
-        SystemInfo systemInfo = new SystemInfo();
-        List<GraphicsCard> gpus = systemInfo.getHardware().getGraphicsCards();
-        StringBuilder gpuInfo = new StringBuilder("GPU Information:\n");
-        for (GraphicsCard gpu : gpus) {
-            gpuInfo.append("GPU Name: ").append(gpu.getName()).append("\n");
-            gpuInfo.append("VRAM: ").append(gpu.getVRam() / (1024 * 1024)).append(" MB\n");
-        }
-        return gpuInfo.toString();
-    }
-
-    // Method to get RAM info using OperatingSystemMXBean
-    public String getRamInfo() {
-        OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
-        long totalMemory = osBean.getTotalPhysicalMemorySize();
-        long freeMemory = osBean.getFreePhysicalMemorySize();
-        long usedMemory = totalMemory - freeMemory;
-
-        return "RAM Information:\n" +
-                "Total RAM: " + (totalMemory / (1024 * 1024)) + " MB\n" +
-                "Used RAM: " + (usedMemory / (1024 * 1024)) + " MB\n" +
-                "Free RAM: " + (freeMemory / (1024 * 1024)) + " MB";
-    }
-
-    // Method to get CPU usage using OperatingSystemMXBean
-    public String getCpuUsage() {
-        OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
-        double cpuLoad = osBean.getSystemCpuLoad() * 100;
-
-        if (cpuLoad < 0) {
-            return "CPU Usage: Data not available";
-        }
-
-        return String.format("CPU Usage: %.2f%%", cpuLoad);
+    // Initialize system information at startup
+    private void initializeSystemInfo() {
+        ramLabel.setText(RamInfo.getRamInfo());
+        cpuLabel.setText(CpuInfo.getCpuInfo());
+        gpuLabel.setText(GpuInfo.getGpuInfo());
+        storageLabel.setText(StorageInfo.getStorageInfo());
+        networkLabel.setText(NetworkInfo.getNetworkInfo());
     }
 
     public static void main(String[] args) {
