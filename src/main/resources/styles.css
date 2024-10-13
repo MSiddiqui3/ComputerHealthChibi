@@ -100,6 +100,20 @@
     -fx-stroke-width: 1;           /* Set the outline thickness */
 }
 
+/* Set the background color of the ScrollPane */
+.scroll-pane {
+    -fx-background-color: #3e3e3e; /* Darker background color */
+}
+
+/* Set the Label inside ScrollPane to have white text for readability */
+.scroll-pane .label {
+    -fx-text-fill: black; /* White text color */
+}
+
+/* NETWORK has the same background color */
+.tab-pane .tab-content {
+    -fx-background-color: #3e3e3e; /* Darker background color */
+}
 
 
 
