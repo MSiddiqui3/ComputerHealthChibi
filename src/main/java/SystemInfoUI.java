@@ -19,6 +19,8 @@ public class SystemInfoUI extends Application {
     Label networkLabel = new Label();
     Label storageLabel = new Label();
 
+    Label batteryLabel = new Label();
+
     HardwareMonitorData hardwareMonitorData = new HardwareMonitorData();
 
     // Chibi Avatar
@@ -52,6 +54,8 @@ public class SystemInfoUI extends Application {
         ramTab.setClosable(false);
         Tab storageTab = new Tab("STORAGE", new VBox(storageLabel));
         storageTab.setClosable(false);
+        Tab batteryTab = new Tab("BATTERY", new VBox(batteryLabel));
+        batteryTab.setClosable(false);
 
         String gpuTemperature = hardwareMonitorData.getGpuTemperature();
         String gpuFanSpeed = hardwareMonitorData.getGpuFanSpeed();
@@ -63,7 +67,7 @@ public class SystemInfoUI extends Application {
         cpuLabel.setText(CpuInfo.getCpuInfo() + "CPU Voltage: " + cpuVoltage);
         storageLabel.setText(StorageInfo.getStorageInfo());
         networkLabel.setText(NetworkInfo.getNetworkInfo());
-
+        batteryLabel.setText(BatteryInfo.getBatteryInfo());
 
         //SETUP NETWORK TAB WITH SCROLL TAB
         networkScrollPane.setContent(networkLabel);
@@ -73,7 +77,7 @@ public class SystemInfoUI extends Application {
 
 
         networkTab.setClosable(false);
-        tabPane.getTabs().addAll(cpuTab, gpuTab, ramTab, storageTab, networkTab);
+        tabPane.getTabs().addAll(cpuTab, gpuTab, ramTab, storageTab, networkTab , batteryTab);
 
         //SETTINGS TAB
         Tab settingsTab = new Tab("Settings");
@@ -107,6 +111,7 @@ public class SystemInfoUI extends Application {
             cpuLabel.setText(CpuInfo.getCpuInfo()  + "CPU Voltage: " + cpuVoltage);
             storageLabel.setText(StorageInfo.getStorageInfo());
             networkLabel.setText(NetworkInfo.getNetworkInfo());
+            batteryLabel.setText(BatteryInfo.getBatteryInfo());
             timeline.play();  // Starts the timeline updates
         });
 
@@ -117,6 +122,7 @@ public class SystemInfoUI extends Application {
             cpuLabel.setText("CPU System Monitoring Off");
             storageLabel.setText("Storage Monitoring Off");
             networkLabel.setText("Network Monitoring Off");
+            batteryLabel.setText("Battery Monitoring Off");
             timeline.stop();  // Stops the timeline updates
         });
 
@@ -137,6 +143,7 @@ public class SystemInfoUI extends Application {
             cpuLabel.setText(CpuInfo.getCpuInfo() + "CPU Voltage: " + cpuVoltage);
             storageLabel.setText(StorageInfo.getStorageInfo());
             networkLabel.setText(NetworkInfo.getNetworkInfo());
+            batteryLabel.setText(BatteryInfo.getBatteryInfo());
         }));
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
