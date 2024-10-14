@@ -15,7 +15,7 @@ public class SystemInfoUI extends Application {
     // Labels to display system information
     Label gpuLabel = new Label();
     Label ramLabel = new Label();
-    Label cpuLabel = new Label("CPU Usage:");
+    Label cpuLabel = new Label();
     Label networkLabel = new Label();
     Label storageLabel = new Label();
 
@@ -24,10 +24,10 @@ public class SystemInfoUI extends Application {
     // Chibi Avatar
     ImageView imageView = new ImageView();
 
-    // Timeline for real-time monitoring (initialize it here)
+    // Timeline
     Timeline timeline = new Timeline();
 
-    // ScrollPane to hold network info
+    //SCROLLPANE
     ScrollPane networkScrollPane = new ScrollPane();
 
     ChibiSettings chibiSettings;
@@ -35,7 +35,7 @@ public class SystemInfoUI extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        // Initialize ChibiSettings with the imageView
+        //INITIALIZE CHIBI METHODS
         chibiSettings = new ChibiSettings(imageView);
         chibiSettings.initializeChibi();
         chibiSettings.addSwayingAnimation();
@@ -56,17 +56,26 @@ public class SystemInfoUI extends Application {
         String gpuTemperature = hardwareMonitorData.getGpuTemperature();
         String gpuFanSpeed = hardwareMonitorData.getGpuFanSpeed();
         String cpuVoltage = hardwareMonitorData.getCpuVoltage();
-        initializeSystemInfo();
 
-        // Network Tab - with ScrollPane
+        //INITIAL SYSTEM INFO
+        gpuLabel.setText(GpuInfo.getGpuInfo() + "Temperature: " + gpuTemperature + "\n" + "Fan Speed: " + gpuFanSpeed);
+        ramLabel.setText(RamInfo.getRamInfo());
+        cpuLabel.setText(CpuInfo.getCpuInfo() + "CPU Voltage: " + cpuVoltage);
+        storageLabel.setText(StorageInfo.getStorageInfo());
+        networkLabel.setText(NetworkInfo.getNetworkInfo());
+
+
+        //SETUP NETWORK TAB WITH SCROLL TAB
         networkScrollPane.setContent(networkLabel);
         networkScrollPane.setFitToWidth(true);
         networkScrollPane.setPrefHeight(300);
         Tab networkTab = new Tab("NETWORK", networkScrollPane);
+
+
         networkTab.setClosable(false);
         tabPane.getTabs().addAll(cpuTab, gpuTab, ramTab, storageTab, networkTab);
 
-        // Settings Tab for Chibi Appearance
+        //SETTINGS TAB
         Tab settingsTab = new Tab("Settings");
         ComboBox<String> chibiComboBox = new ComboBox<>();
         chibiComboBox.getItems().addAll("Chibi 1", "Chibi 2", "Chibi 3");
@@ -86,6 +95,7 @@ public class SystemInfoUI extends Application {
         root.setTop(tabPane);
         root.setCenter(imageView);
 
+
         // On/Off Buttons
         Button onButton = new Button("On");
         Button offButton = new Button("Off");
@@ -96,7 +106,7 @@ public class SystemInfoUI extends Application {
             ramLabel.setText(RamInfo.getRamInfo());
             cpuLabel.setText(CpuInfo.getCpuInfo()  + "CPU Voltage: " + cpuVoltage);
             storageLabel.setText(StorageInfo.getStorageInfo());
-            //networkLabel.setText(NetworkInfo.getNetworkInfo());
+            networkLabel.setText(NetworkInfo.getNetworkInfo());
             timeline.play();  // Starts the timeline updates
         });
 
@@ -129,16 +139,10 @@ public class SystemInfoUI extends Application {
             networkLabel.setText(NetworkInfo.getNetworkInfo());
         }));
         timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
     }
 
-    // Initialize system information at startup
-    private void initializeSystemInfo() {
-        ramLabel.setText(RamInfo.getRamInfo());
-        cpuLabel.setText(CpuInfo.getCpuInfo());
-        gpuLabel.setText(GpuInfo.getGpuInfo());
-        storageLabel.setText(StorageInfo.getStorageInfo());
-        networkLabel.setText(NetworkInfo.getNetworkInfo());
-    }
+
 
     public static void main(String[] args) {
         launch(args);

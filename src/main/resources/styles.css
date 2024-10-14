@@ -8,6 +8,7 @@
     -fx-font-size: 14px;
     -fx-text-fill: white; /* White text */
     -fx-font-family: 'Arial';
+    -fx-background-color: #5F5454;
 }
 
 /* Style for buttons */
@@ -37,7 +38,7 @@
     -fx-border-color: red;
     -fx-border-width: 3px;
     -fx-border-radius: 10px;
-    -fx-padding: 10px;
+    -fx-padding: 20px;
 }
 
 .tab-pane .tab-header-background {
@@ -96,18 +97,22 @@
 }
 
 .settings-tab .text {
-    -fx-stroke: white;             /* Keep the white outline for Settings */
-    -fx-stroke-width: 1;           /* Set the outline thickness */
+    -fx-stroke: white;
+    -fx-stroke-width: 1;
 }
 
 /* Set the background color of the ScrollPane */
 .scroll-pane {
     -fx-background-color: #3e3e3e; /* Darker background color */
+    -fx-background-insets: 0;      /* Removes any padding or margins */
+    -fx-padding: 0;                /* Ensures no internal padding */
 }
 
 /* Set the Label inside ScrollPane to have white text for readability */
 .scroll-pane .label {
-    -fx-text-fill: black; /* White text color */
+    -fx-text-fill: black;
+    -fx-background-color: white;
+
 }
 
 /* NETWORK has the same background color */
@@ -115,5 +120,8 @@
     -fx-background-color: #3e3e3e; /* Darker background color */
 }
 
+.scroll-bar .track {
+    -fx-background-color: #3b3b3b; /* Match the track to the background color */
+}
 
 
