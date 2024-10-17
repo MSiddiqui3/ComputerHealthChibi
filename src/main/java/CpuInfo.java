@@ -2,12 +2,14 @@ import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.Sensors;
 
+
+
+
 public class CpuInfo {
     public static String getCpuInfo() {
         SystemInfo si = new SystemInfo();
         CentralProcessor cpu = si.getHardware().getProcessor();
         Sensors sensors = si.getHardware().getSensors();
-
 
 
         StringBuilder cpuInfo = new StringBuilder();

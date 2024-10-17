@@ -11,7 +11,7 @@ public class HardwareMonitorData {
     private JsonObject jsonData;
 
     //METHOD TO GRAB THE INFORMATION FROM HARDWARE MONITOR AS A JSON
-    public HardwareMonitorData() {
+    public void HardwareMonitorJson() {
         try {
             URL url = new URL("http://localhost:8085/data.json");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -48,6 +48,7 @@ public class HardwareMonitorData {
 
     //METHOD WHICH IS CALLED BY THE MAIN CLASS
     public String getGpuTemperature() {
+        HardwareMonitorJson();
         if (jsonData == null) {
             System.out.println("Error: jsonData is null. Unable to retrieve GPU temperature.");
             return "N/A";
@@ -62,6 +63,7 @@ public class HardwareMonitorData {
     }
 
     public String getGpuFanSpeed() {
+        HardwareMonitorJson();
         if (jsonData == null) {
             System.out.println("Error: jsonData is null. Unable to retrieve GPU temperature.");
             return "N/A";
@@ -76,6 +78,7 @@ public class HardwareMonitorData {
     }
 
     public String getCpuVoltage() {
+        HardwareMonitorJson();
         if (jsonData == null) {
             System.out.println("Error: jsonData is null. Unable to retrieve GPU temperature.");
             return "N/A";
@@ -83,6 +86,21 @@ public class HardwareMonitorData {
 
         try {
             return searchForInfoInCategory(jsonData, "Voltages", "CPU VCore");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "N/A";
+    }
+
+    public String getCpuUsage() {
+        HardwareMonitorJson();
+        if (jsonData == null) {
+            System.out.println("Error: jsonData is null. Unable to retrieve GPU temperature.");
+            return "N/A";
+        }
+
+        try {
+            return searchForInfoInCategory(jsonData, "Load", "CPU Total");
         } catch (Exception e) {
             e.printStackTrace();
         }

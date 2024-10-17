@@ -34,6 +34,11 @@ public class SystemInfoUI extends Application {
 
     ChibiSettings chibiSettings;
 
+    private String gpuTemperature;
+    private String gpuFanSpeed;
+    private String cpuVoltage;
+    private String cpuUsage;
+
     @Override
     public void start(Stage primaryStage) {
 
@@ -57,17 +62,24 @@ public class SystemInfoUI extends Application {
         Tab batteryTab = new Tab("BATTERY", new VBox(batteryLabel));
         batteryTab.setClosable(false);
 
-        String gpuTemperature = hardwareMonitorData.getGpuTemperature();
-        String gpuFanSpeed = hardwareMonitorData.getGpuFanSpeed();
-        String cpuVoltage = hardwareMonitorData.getCpuVoltage();
 
-        //INITIAL SYSTEM INFO
-        gpuLabel.setText(GpuInfo.getGpuInfo() + "Temperature: " + gpuTemperature + "\n" + "Fan Speed: " + gpuFanSpeed);
-        ramLabel.setText(RamInfo.getRamInfo());
-        cpuLabel.setText(CpuInfo.getCpuInfo() + "CPU Voltage: " + cpuVoltage);
-        storageLabel.setText(StorageInfo.getStorageInfo());
-        networkLabel.setText(NetworkInfo.getNetworkInfo());
-        batteryLabel.setText(BatteryInfo.getBatteryInfo());
+        // REALTIME UPDATES TO LABELS
+        timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(1), event -> {
+            gpuTemperature = hardwareMonitorData.getGpuTemperature();
+            gpuFanSpeed = hardwareMonitorData.getGpuFanSpeed();
+            cpuVoltage = hardwareMonitorData.getCpuVoltage();
+            cpuUsage = hardwareMonitorData.getCpuUsage();
+
+            gpuLabel.setText(GpuInfo.getGpuInfo() + "Temperature: " + gpuTemperature + "\n" + "Fan Speed: " + gpuFanSpeed);
+            ramLabel.setText(RamInfo.getRamInfo());
+            cpuLabel.setText(CpuInfo.getCpuInfo() + "CPU Voltage: " + cpuVoltage + "\n" + "CPU Usage: " + cpuUsage);
+            storageLabel.setText(StorageInfo.getStorageInfo());
+            networkLabel.setText(NetworkInfo.getNetworkInfo());
+            batteryLabel.setText(BatteryInfo.getBatteryInfo());
+        }));
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
+
 
         //SETUP NETWORK TAB WITH SCROLL TAB
         networkScrollPane.setContent(networkLabel);
@@ -108,7 +120,7 @@ public class SystemInfoUI extends Application {
         onButton.setOnAction(event -> {
             gpuLabel.setText(GpuInfo.getGpuInfo() +"Temperature: " + gpuTemperature +"\n" + "Fan Speed: " + gpuFanSpeed);
             ramLabel.setText(RamInfo.getRamInfo());
-            cpuLabel.setText(CpuInfo.getCpuInfo()  + "CPU Voltage: " + cpuVoltage);
+            cpuLabel.setText(CpuInfo.getCpuInfo() + "CPU Voltage: " + cpuVoltage + "\n" + "CPU Usage: " + cpuUsage);
             storageLabel.setText(StorageInfo.getStorageInfo());
             networkLabel.setText(NetworkInfo.getNetworkInfo());
             batteryLabel.setText(BatteryInfo.getBatteryInfo());
@@ -136,17 +148,7 @@ public class SystemInfoUI extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        // REALTIME UPDATES
-        timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(2), event -> {
-            gpuLabel.setText(GpuInfo.getGpuInfo() + "Temperature: " + gpuTemperature + "\n" + "Fan Speed: " + gpuFanSpeed);
-            ramLabel.setText(RamInfo.getRamInfo());
-            cpuLabel.setText(CpuInfo.getCpuInfo() + "CPU Voltage: " + cpuVoltage);
-            storageLabel.setText(StorageInfo.getStorageInfo());
-            networkLabel.setText(NetworkInfo.getNetworkInfo());
-            batteryLabel.setText(BatteryInfo.getBatteryInfo());
-        }));
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.play();
+
     }
 
 
