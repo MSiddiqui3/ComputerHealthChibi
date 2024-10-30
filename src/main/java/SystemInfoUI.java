@@ -1,9 +1,9 @@
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
@@ -18,34 +18,25 @@ public class SystemInfoUI extends Application {
     Label cpuLabel = new Label();
     Label networkLabel = new Label();
     Label storageLabel = new Label();
-
     Label batteryLabel = new Label();
 
     HardwareMonitorData hardwareMonitorData = new HardwareMonitorData();
 
     // Chibi Avatar
     ImageView imageView = new ImageView();
+    ChibiManager chibiManager; // Chibi manager to handle all chibi logic
 
-    // Timeline
-    Timeline timeline = new Timeline();
-
-    //SCROLLPANE
+    // SCROLLPANE
     ScrollPane networkScrollPane = new ScrollPane();
-
-    ChibiSettings chibiSettings;
-
-    private String gpuTemperature;
-    private String gpuFanSpeed;
-    private String cpuVoltage;
-    private String cpuUsage;
 
     @Override
     public void start(Stage primaryStage) {
+        // Initialize ChibiManager with imageView and ramStatusLabel
+        Label ramStatusLabel = new Label("RAM Status: Stable");
+        chibiManager = new ChibiManager(imageView, ramStatusLabel);
+        chibiManager.addSwayingAnimation();  // Add swaying animation for chibi
 
-        //INITIALIZE CHIBI METHODS
-        chibiSettings = new ChibiSettings(imageView);
-        chibiSettings.initializeChibi();
-        chibiSettings.addSwayingAnimation();
+        chibiManager.startRamMonitoring();  // Start RAM monitoring
 
         // SETUP TABS FOR THE MAIN COMPONENTS
         TabPane tabPane = new TabPane();
@@ -62,36 +53,28 @@ public class SystemInfoUI extends Application {
         Tab batteryTab = new Tab("BATTERY", new VBox(batteryLabel));
         batteryTab.setClosable(false);
 
+        String gpuTemperature = hardwareMonitorData.getGpuTemperature();
+        String gpuFanSpeed = hardwareMonitorData.getGpuFanSpeed();
+        String cpuVoltage = hardwareMonitorData.getCpuVoltage();
 
-        // REALTIME UPDATES TO LABELS
-        timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(1), event -> {
-            gpuTemperature = hardwareMonitorData.getGpuTemperature();
-            gpuFanSpeed = hardwareMonitorData.getGpuFanSpeed();
-            cpuVoltage = hardwareMonitorData.getCpuVoltage();
-            cpuUsage = hardwareMonitorData.getCpuUsage();
+        // INITIAL SYSTEM INFO
+        gpuLabel.setText(GpuInfo.getGpuInfo() + "Temperature: " + gpuTemperature + "\n" + "Fan Speed: " + gpuFanSpeed);
+        ramLabel.setText(RamInfo.getRamInfo());
+        cpuLabel.setText(CpuInfo.getCpuInfo() + "CPU Voltage: " + cpuVoltage);
+        storageLabel.setText(StorageInfo.getStorageInfo());
+        networkLabel.setText(NetworkInfo.getNetworkInfo());
+        batteryLabel.setText(BatteryInfo.getBatteryInfo());
 
-            gpuLabel.setText(GpuInfo.getGpuInfo() + "Temperature: " + gpuTemperature + "\n" + "Fan Speed: " + gpuFanSpeed);
-            ramLabel.setText(RamInfo.getRamInfo());
-            cpuLabel.setText(CpuInfo.getCpuInfo() + "CPU Voltage: " + cpuVoltage + "\n" + "CPU Usage: " + cpuUsage);
-            storageLabel.setText(StorageInfo.getStorageInfo());
-            networkLabel.setText(NetworkInfo.getNetworkInfo());
-            batteryLabel.setText(BatteryInfo.getBatteryInfo());
-        }));
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.play();
-
-
-        //SETUP NETWORK TAB WITH SCROLL TAB
+        // SETUP NETWORK TAB WITH SCROLL TAB
         networkScrollPane.setContent(networkLabel);
         networkScrollPane.setFitToWidth(true);
         networkScrollPane.setPrefHeight(300);
         Tab networkTab = new Tab("NETWORK", networkScrollPane);
 
-
         networkTab.setClosable(false);
-        tabPane.getTabs().addAll(cpuTab, gpuTab, ramTab, storageTab, networkTab , batteryTab);
+        tabPane.getTabs().addAll(cpuTab, gpuTab, ramTab, storageTab, networkTab, batteryTab);
 
-        //SETTINGS TAB
+        // SETTINGS TAB
         Tab settingsTab = new Tab("Settings");
         ComboBox<String> chibiComboBox = new ComboBox<>();
         chibiComboBox.getItems().addAll("Chibi 1", "Chibi 2", "Chibi 3");
@@ -99,7 +82,8 @@ public class SystemInfoUI extends Application {
 
         chibiComboBox.setOnAction(event -> {
             String selectedChibi = chibiComboBox.getValue();
-            chibiSettings.changeChibiAppearance(selectedChibi);
+            chibiManager.changeChibiAppearance(selectedChibi);  // Change chibi
+
         });
 
         settingsTab.setContent(new VBox(new Label("Select Chibi Appearance:"), chibiComboBox));
@@ -109,8 +93,9 @@ public class SystemInfoUI extends Application {
         // SETUP LAYOUT
         BorderPane root = new BorderPane();
         root.setTop(tabPane);
-        root.setCenter(imageView);
-
+        root.setCenter(imageView);  // Chibi will be displayed in the center
+        VBox layout = new VBox(10, imageView, ramStatusLabel);  // Added ramStatusLabel here
+        root.setCenter(layout);  // Set VBox layout including image and status label
 
         // On/Off Buttons
         Button onButton = new Button("On");
@@ -118,13 +103,13 @@ public class SystemInfoUI extends Application {
 
         // Add action to "On" button
         onButton.setOnAction(event -> {
-            gpuLabel.setText(GpuInfo.getGpuInfo() +"Temperature: " + gpuTemperature +"\n" + "Fan Speed: " + gpuFanSpeed);
+            gpuLabel.setText(GpuInfo.getGpuInfo() + "Temperature: " + gpuTemperature + "\n" + "Fan Speed: " + gpuFanSpeed);
             ramLabel.setText(RamInfo.getRamInfo());
-            cpuLabel.setText(CpuInfo.getCpuInfo() + "CPU Voltage: " + cpuVoltage + "\n" + "CPU Usage: " + cpuUsage);
+            cpuLabel.setText(CpuInfo.getCpuInfo() + "CPU Voltage: " + cpuVoltage);
             storageLabel.setText(StorageInfo.getStorageInfo());
             networkLabel.setText(NetworkInfo.getNetworkInfo());
             batteryLabel.setText(BatteryInfo.getBatteryInfo());
-            timeline.play();  // Starts the timeline updates
+            chibiManager.startRamMonitoring();  // Start RAM monitoring
         });
 
         // Add action to "Off" button
@@ -135,7 +120,7 @@ public class SystemInfoUI extends Application {
             storageLabel.setText("Storage Monitoring Off");
             networkLabel.setText("Network Monitoring Off");
             batteryLabel.setText("Battery Monitoring Off");
-            timeline.stop();  // Stops the timeline updates
+            chibiManager.stopRamMonitoring();  // Stop RAM monitoring
         });
 
         // Add buttons to the bottom
@@ -149,9 +134,19 @@ public class SystemInfoUI extends Application {
         primaryStage.show();
 
 
+
+        // REALTIME UPDATES (2-second interval)
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), event -> {
+            gpuLabel.setText(GpuInfo.getGpuInfo() + "Temperature: " + gpuTemperature + "\n" + "Fan Speed: " + gpuFanSpeed);
+            ramLabel.setText(RamInfo.getRamInfo());
+            cpuLabel.setText(CpuInfo.getCpuInfo() + "CPU Voltage: " + cpuVoltage);
+            storageLabel.setText(StorageInfo.getStorageInfo());
+            networkLabel.setText(NetworkInfo.getNetworkInfo());
+            batteryLabel.setText(BatteryInfo.getBatteryInfo());
+        }));
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
     }
-
-
 
     public static void main(String[] args) {
         launch(args);

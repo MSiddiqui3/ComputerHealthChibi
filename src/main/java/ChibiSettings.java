@@ -6,17 +6,16 @@ import javafx.util.Duration;
 public class ChibiSettings {
     private ImageView imageView;
 
-    //CONSTRUCTOR FOR THE CHIBI
     public ChibiSettings(ImageView imageView) {
         this.imageView = imageView;
     }
 
-    //INITIALIZE CHIBI
+    // Initialize with default chibi image
     public void initializeChibi() {
-        setChibiImage("/images/chibi1.png");
+        setChibiImage("/images/chibi1.png"); // Default chibi image
     }
 
-    //ALLOWS FOR CHANGING OF CHIBI APPEARANCE
+    // Method to change the chibi appearance based on user selection
     public void changeChibiAppearance(String chibiOption) {
         switch (chibiOption) {
             case "Chibi 1":
@@ -29,30 +28,30 @@ public class ChibiSettings {
                 setChibiImage("/images/chibi3.png");
                 break;
             default:
-                setChibiImage("/images/chibi1.png");
+                setChibiImage("/images/chibi1.png"); // Fallback to default if option is invalid
                 break;
         }
     }
 
-    // Method to set the image for the chibi character
+    // Set the image for the chibi character
     private void setChibiImage(String imagePath) {
         try {
             Image chibiImage = new Image(getClass().getResource(imagePath).toExternalForm());
-            imageView.setImage(chibiImage);
-            imageView.setFitHeight(150);
-            imageView.setPreserveRatio(true);
+            imageView.setImage(chibiImage); // Set the image in the ImageView
+            imageView.setFitHeight(150); // Adjust image height
+            imageView.setPreserveRatio(true); // Preserve aspect ratio
         } catch (Exception e) {
             System.out.println("Error loading chibi image: " + e.getMessage());
         }
     }
 
-    //BASIC ANIMATION
+    // Add a swaying animation for the chibi character
     public void addSwayingAnimation() {
         TranslateTransition sway = new TranslateTransition(Duration.millis(1000), imageView);
-        sway.setFromX(-20);  // Move 20 pixels left
-        sway.setToX(20);     // Move 20 pixels right
-        sway.setAutoReverse(true);  // Automatically reverse after each cycle
-        sway.setCycleCount(TranslateTransition.INDEFINITE);  // Repeat indefinitely
-        sway.play();  // Start the animation
+        sway.setFromX(-20); // Sway from -20px
+        sway.setToX(20); // Sway to +20px
+        sway.setAutoReverse(true); // Reverse the animation automatically
+        sway.setCycleCount(TranslateTransition.INDEFINITE); // Repeat indefinitely
+        sway.play(); // Start the animation
     }
 }
