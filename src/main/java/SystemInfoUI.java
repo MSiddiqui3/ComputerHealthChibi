@@ -82,7 +82,7 @@ public class SystemInfoUI extends Application {
 
         chibiComboBox.setOnAction(event -> {
             String selectedChibi = chibiComboBox.getValue();
-            chibiManager.changeChibiAppearance(selectedChibi);  // Change chibi
+            chibiManager.changeChibiAppearance(selectedChibi);  // Change chibi appearance
 
         });
 
