@@ -29,7 +29,7 @@ public class ChibiManager{
     private Timeline ramMonitoringTimeline;
     private Timeline cpuTemperatureMonitoringTimeline;
 
-    private static final long STABLE_THRESHOLD = 4000 * 1024 * 1024;  //base threshold for stable ram equal to 50MB
+    private static final long STABLE_THRESHOLD = 50 * 1024 * 1024;  //base threshold for stable ram equal to 50MB
 
     public ChibiManager(ImageView imageView, Label ramStatusLabel, Label cpuStatusLabel) {
 
