@@ -32,8 +32,9 @@ public class SystemInfoUI extends Application {
     @Override
     public void start(Stage primaryStage) {
         // Initialize ChibiManager with imageView and ramStatusLabel
-        Label ramStatusLabel = new Label("RAM Status: Stable");
-        chibiManager = new ChibiManager(imageView, ramStatusLabel);
+        Label ramStatusLabel = new Label("");
+        Label cpuStatusLabel = new Label("");
+        chibiManager = new ChibiManager(imageView, ramStatusLabel, cpuStatusLabel);
         chibiManager.addSwayingAnimation();  // Add swaying animation for chibi
 
         chibiManager.startRamMonitoring();  // Start RAM monitoring
@@ -80,21 +81,36 @@ public class SystemInfoUI extends Application {
         chibiComboBox.getItems().addAll("Chibi 1", "Chibi 2", "Chibi 3");
         chibiComboBox.setValue("Chibi 1");
 
+        ComboBox<String> trackerDropdown = new ComboBox<>();
+        trackerDropdown.getItems().addAll("RAM Usage", "CPU");
+
         chibiComboBox.setOnAction(event -> {
             String selectedChibi = chibiComboBox.getValue();
             chibiManager.changeChibiAppearance(selectedChibi);  // Change chibi appearances
-
         });
 
-        settingsTab.setContent(new VBox(new Label("Select Chibi Appearance:"), chibiComboBox));
+        trackerDropdown.setOnAction(event -> {
+            String selectedTracker = trackerDropdown.getValue();
+            chibiManager.setMonitoringTracker(selectedTracker);
+
+            cpuStatusLabel.setVisible(selectedTracker.equals("CPU"));
+            ramStatusLabel.setVisible(selectedTracker.equals("RAM Usage"));
+        });
+
+
+        settingsTab.setContent(new VBox(
+                new Label("Select Chibi Appearance: "), chibiComboBox,
+                new Label("Select Chibi Tracker: "), trackerDropdown
+                ));
         settingsTab.setClosable(false);
+
         tabPane.getTabs().add(settingsTab);
 
         // SETUP LAYOUT
         BorderPane root = new BorderPane();
         root.setTop(tabPane);
         root.setCenter(imageView);  // Chibi will be displayed in the center
-        VBox layout = new VBox(10, imageView, ramStatusLabel);  // Added ramStatusLabel here
+        VBox layout = new VBox(10, imageView, ramStatusLabel , cpuStatusLabel);
         root.setCenter(layout);  // Set VBox layout including image and status label
 
         // On/Off Buttons
@@ -109,7 +125,7 @@ public class SystemInfoUI extends Application {
             storageLabel.setText(StorageInfo.getStorageInfo());
             networkLabel.setText(NetworkInfo.getNetworkInfo());
             batteryLabel.setText(BatteryInfo.getBatteryInfo());
-            chibiManager.startRamMonitoring();  // Start RAM monitoring
+            chibiManager.setMonitoringTracker(trackerDropdown.getValue());
         });
 
         // Add action to "Off" button
@@ -120,7 +136,7 @@ public class SystemInfoUI extends Application {
             storageLabel.setText("Storage Monitoring Off");
             networkLabel.setText("Network Monitoring Off");
             batteryLabel.setText("Battery Monitoring Off");
-            chibiManager.stopRamMonitoring();  // Stop RAM monitoring
+            //chibiManager.stopAllMonitoring();  // Stop RAM monitoring
         });
 
         // Add buttons to the bottom
