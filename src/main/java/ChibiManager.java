@@ -32,19 +32,19 @@ public class ChibiManager{
         this.previousFreeRam = RamInfo.getFreeRam();  // Initialize with the current RAM value
 
         // Load normal chibi images
-        chibiNormalImages.put("Chibi 1", "/images/chibi1.png");
-        chibiNormalImages.put("Chibi 2", "/images/chibi2.png");
-        chibiNormalImages.put("Chibi 3", "/images/chibi3.png");
+        chibiNormalImages.put("Chibi 1", "/images/jg1n.gif");
+        chibiNormalImages.put("Chibi 2", "/images/jg2n.gif");
+        chibiNormalImages.put("Chibi 3", "/images/jg3n.gif");
 
         // Load sad chibi images
-        chibiSadImages.put("Chibi 1", "/images/chibi1sad.png");
-        chibiSadImages.put("Chibi 2", "/images/chibi2sad.png");
-        chibiSadImages.put("Chibi 3", "/images/chibi3sad.png");
+        chibiSadImages.put("Chibi 1", "/images/jg1s.gif");
+        chibiSadImages.put("Chibi 2", "/images/jg2s.gif");
+        chibiSadImages.put("Chibi 3", "/images/jg3s.gif");
 
         //Load happy chibi images
-        chibiHappyImages.put("Chibi 1", "/images/chibi1laugh.png");
-        chibiHappyImages.put("Chibi 2", "/images/chibi2laugh.png");
-        chibiHappyImages.put("Chibi 3", "/images/chibi3laugh.png");
+        chibiHappyImages.put("Chibi 1", "/images/jg1h.gif");
+        chibiHappyImages.put("Chibi 2", "/images/jg2h.gif");
+        chibiHappyImages.put("Chibi 3", "/images/jg3h.gif");
 
         // Set default chibi image
         setChibiImage(chibiNormalImages.get(currentChibi));
