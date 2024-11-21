@@ -34,7 +34,7 @@ public class ChibiManager{
     HardwareMonitorData hardwareMonitorData = new HardwareMonitorData();
     String gpuTemperature = hardwareMonitorData.getGpuTemperature();
 
-    private static final long STABLE_THRESHOLD = 4000 * 1024 * 1024;  //base threshold for stable ram equal to 50MB
+    private static final long STABLE_THRESHOLD = 50 * 1024 * 1024;  //base threshold for stable ram equal to 50MB
 
     public ChibiManager(ImageView imageView, Label ramStatusLabel, Label cpuStatusLabel, Label gpuStatusLabel) {
 
