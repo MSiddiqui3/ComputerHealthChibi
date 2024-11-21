@@ -20,6 +20,7 @@ public class ChibiManager{
     private ImageView imageView;
     private Label ramStatusLabel;
     private Label cpuStatusLabel;
+    private Label gpuStatusLabel;
     private long previousFreeRam;
     private Map<String, String> chibiNormalImages = new HashMap<>();
     private Map<String, String> chibiSadImages = new HashMap<>();
@@ -28,16 +29,21 @@ public class ChibiManager{
     private String currentChibi = "Chibi 1";
     private Timeline ramMonitoringTimeline;
     private Timeline cpuTemperatureMonitoringTimeline;
+    private Timeline gpuTemperatureMonitoringTimeline;
+
+    HardwareMonitorData hardwareMonitorData = new HardwareMonitorData();
+    String gpuTemperature = hardwareMonitorData.getGpuTemperature();
 
     private static final long STABLE_THRESHOLD = 50 * 1024 * 1024;  //base threshold for stable ram equal to 50MB
 
-    public ChibiManager(ImageView imageView, Label ramStatusLabel, Label cpuStatusLabel) {
+    public ChibiManager(ImageView imageView, Label ramStatusLabel, Label cpuStatusLabel, Label gpuStatusLabel) {
 
 
         this.imageView = imageView;
         this.ramStatusLabel = ramStatusLabel;
         this.previousFreeRam = RamInfo.getFreeRam();  // Initialize with the current RAM value
         this.cpuStatusLabel = cpuStatusLabel;
+        this.gpuStatusLabel = gpuStatusLabel;
 
         // Load normal chibi images
         chibiNormalImages.put("Chibi 1", "/images/chibi1normal.gif");
@@ -67,12 +73,20 @@ public class ChibiManager{
             case "RAM Usage":
                 ramStatusLabel.setVisible(true);
                 cpuStatusLabel.setVisible(false);
+                gpuStatusLabel.setVisible(false);
                 startRamMonitoring();
                 break;
-            case "CPU":
+            case "CPU Temp":
                 cpuStatusLabel.setVisible(true);
                 ramStatusLabel.setVisible(false);
+                gpuStatusLabel.setVisible(false);
                 startCpuTemperatureMonitoring();
+                break;
+            case "GPU Temp":
+                gpuStatusLabel.setVisible(true);
+                ramStatusLabel.setVisible(false);
+                cpuStatusLabel.setVisible(false);
+                startGpuTemperatureMonitoring();
                 break;
             default:
                 System.out.println("Invalid tracker selected");
@@ -130,7 +144,6 @@ public class ChibiManager{
             double temperature = sensors.getCpuTemperature();
 
 
-
             //FOR TESTING PURPOSES DURING DEMO
             //UNCOMMENT THE 2 BELOW AND COMMENT OUT THE 2 ORIGINAL
             //final double STABLE_TEMP_THRESHOLD = 20;
@@ -154,6 +167,48 @@ public class ChibiManager{
         }));
         cpuTemperatureMonitoringTimeline.setCycleCount(Timeline.INDEFINITE);
         cpuTemperatureMonitoringTimeline.play();
+    }
+
+
+    //TEMPERATURE PARSER FOR THE GPU TEMPS
+    public double parseTemperature(String temperatureString) {
+        try {
+            String numericPart = temperatureString.split(" ")[0];
+            return Double.parseDouble(numericPart);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Double.NaN; // Return NaN if parsing fails
+        }
+    }
+
+    public void startGpuTemperatureMonitoring() {
+        System.out.println("Starting GPU temperature monitoring");
+        gpuTemperatureMonitoringTimeline = new Timeline(new KeyFrame(Duration.seconds(2), event -> {
+
+            double GPUTemp = parseTemperature(gpuTemperature);
+
+            //FOR TESTING PURPOSES DURING DEMO
+            //UNCOMMENT THE 2 BELOW AND COMMENT OUT THE 2 ORIGINAL
+            //final double STABLE_GPU_TEMP_THRESHOLD = 20;
+            //final double HIGH_GPU_TEMP_THRESHOLD = 25;
+
+            final double STABLE_GPU_TEMP_THRESHOLD = 60.0;
+            final double HIGH_GPU_TEMP_THRESHOLD = 86.0;
+
+            System.out.println(GPUTemp);
+            if (GPUTemp < STABLE_GPU_TEMP_THRESHOLD) {
+                setChibiImage(chibiNormalImages.get(currentChibi));
+                gpuStatusLabel.setText("GPU temperature is Stable");
+            } else if (GPUTemp >= HIGH_GPU_TEMP_THRESHOLD) {
+                setChibiImage(chibiSadImages.get(currentChibi));
+                gpuStatusLabel.setText("GPU temperature is High");
+            } else {
+                setChibiImage(chibiNormalImages.get(currentChibi));
+                gpuStatusLabel.setText("GPU temperature is Moderate");
+            }
+        }));
+        gpuTemperatureMonitoringTimeline.setCycleCount(Timeline.INDEFINITE);
+        gpuTemperatureMonitoringTimeline.play();
     }
 
     // Method to change chibi appearance based on the selected option

@@ -34,7 +34,8 @@ public class SystemInfoUI extends Application {
         // Initialize ChibiManager with imageView and ramStatusLabel
         Label ramStatusLabel = new Label("");
         Label cpuStatusLabel = new Label("");
-        chibiManager = new ChibiManager(imageView, ramStatusLabel, cpuStatusLabel);
+        Label gpuStatusLabel = new Label("");
+        chibiManager = new ChibiManager(imageView, ramStatusLabel, cpuStatusLabel, gpuStatusLabel);
         chibiManager.addSwayingAnimation();  // Add swaying animation for chibi
 
         chibiManager.startRamMonitoring();  // Start RAM monitoring
@@ -82,7 +83,16 @@ public class SystemInfoUI extends Application {
         chibiComboBox.setValue("Chibi 1");
 
         ComboBox<String> trackerDropdown = new ComboBox<>();
-        trackerDropdown.getItems().addAll("RAM Usage", "CPU");
+        trackerDropdown.getItems().addAll("RAM Usage", "CPU Temp", "GPU Temp");
+
+        //DISCLAIMER TEXT BOX
+        Label disclaimerLabel = new Label("DISCLAIMER: This application works best in conjunction with Open Hardware Monitor "
+                + "a free to use open source monitor that allows Computer Health Chibi to monitor certain extra aspects of your system. ");
+        disclaimerLabel.setWrapText(true);
+        disclaimerLabel.setMaxWidth(750);
+        disclaimerLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: red;");
+
+
 
         chibiComboBox.setOnAction(event -> {
             String selectedChibi = chibiComboBox.getValue();
@@ -93,14 +103,16 @@ public class SystemInfoUI extends Application {
             String selectedTracker = trackerDropdown.getValue();
             chibiManager.setMonitoringTracker(selectedTracker);
 
-            cpuStatusLabel.setVisible(selectedTracker.equals("CPU"));
+            cpuStatusLabel.setVisible(selectedTracker.equals("CPU Temp"));
             ramStatusLabel.setVisible(selectedTracker.equals("RAM Usage"));
+            gpuStatusLabel.setVisible(selectedTracker.equals("GPU Temp"));
         });
 
 
         settingsTab.setContent(new VBox(
                 new Label("Select Chibi Appearance: "), chibiComboBox,
-                new Label("Select Chibi Tracker: "), trackerDropdown
+                new Label("Select Chibi Tracker: "), trackerDropdown,
+                disclaimerLabel
                 ));
         settingsTab.setClosable(false);
 
@@ -110,7 +122,7 @@ public class SystemInfoUI extends Application {
         BorderPane root = new BorderPane();
         root.setTop(tabPane);
         root.setCenter(imageView);  // Chibi will be displayed in the center
-        VBox layout = new VBox(10, imageView, ramStatusLabel , cpuStatusLabel);
+        VBox layout = new VBox(10, imageView, ramStatusLabel , cpuStatusLabel, gpuStatusLabel);
         root.setCenter(layout);  // Set VBox layout including image and status label
 
         // On/Off Buttons
