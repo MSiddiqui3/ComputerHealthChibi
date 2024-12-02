@@ -20,6 +20,8 @@ public class SystemInfoUI extends Application {
     Label storageLabel = new Label();
     Label batteryLabel = new Label();
 
+    private boolean isDarkMode = true; // Track current theme
+
     HardwareMonitorData hardwareMonitorData = new HardwareMonitorData();
 
     // Chibi Avatar
@@ -31,10 +33,13 @@ public class SystemInfoUI extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+
+
         // Initialize ChibiManager with imageView and ramStatusLabel
         Label ramStatusLabel = new Label("");
         Label cpuStatusLabel = new Label("");
-        chibiManager = new ChibiManager(imageView, ramStatusLabel, cpuStatusLabel);
+        Label gpuStatusLabel = new Label("");
+        chibiManager = new ChibiManager(imageView, ramStatusLabel, cpuStatusLabel, gpuStatusLabel);
         chibiManager.addSwayingAnimation();  // Add swaying animation for chibi
 
         chibiManager.startRamMonitoring();  // Start RAM monitoring
@@ -53,6 +58,11 @@ public class SystemInfoUI extends Application {
         storageTab.setClosable(false);
         Tab batteryTab = new Tab("BATTERY", new VBox(batteryLabel));
         batteryTab.setClosable(false);
+
+        // Integrate Metrics tab
+        Metrics metrics = new Metrics(); // Instance of the Metrics class
+        Tab metricsTab = new Tab("Metrics", metrics.createMetricsChart());
+        metricsTab.setClosable(false);
 
         String gpuTemperature = hardwareMonitorData.getGpuTemperature();
         String gpuFanSpeed = hardwareMonitorData.getGpuFanSpeed();
@@ -73,7 +83,7 @@ public class SystemInfoUI extends Application {
         Tab networkTab = new Tab("NETWORK", networkScrollPane);
 
         networkTab.setClosable(false);
-        tabPane.getTabs().addAll(cpuTab, gpuTab, ramTab, storageTab, networkTab, batteryTab);
+        tabPane.getTabs().addAll(cpuTab, gpuTab, ramTab, storageTab, networkTab, batteryTab, metricsTab);
 
         // SETTINGS TAB
         Tab settingsTab = new Tab("Settings");
@@ -82,7 +92,20 @@ public class SystemInfoUI extends Application {
         chibiComboBox.setValue("Chibi 1");
 
         ComboBox<String> trackerDropdown = new ComboBox<>();
-        trackerDropdown.getItems().addAll("RAM Usage", "CPU");
+        trackerDropdown.getItems().addAll("RAM Usage", "CPU Temp", "GPU Temp");
+
+        ComboBox<String> themeDropdown = new ComboBox<>();
+        themeDropdown.getItems().addAll("Dark Mode", "Light Mode");
+
+
+        //DISCLAIMER TEXT BOX
+        Label disclaimerLabel = new Label("DISCLAIMER: This application works best in conjunction with Open Hardware Monitor "
+                + "a free to use open source monitor that allows Computer Health Chibi to monitor certain extra aspects of your system. ");
+        disclaimerLabel.setWrapText(true);
+        disclaimerLabel.setMaxWidth(750);
+        disclaimerLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: red;");
+
+
 
         chibiComboBox.setOnAction(event -> {
             String selectedChibi = chibiComboBox.getValue();
@@ -93,15 +116,35 @@ public class SystemInfoUI extends Application {
             String selectedTracker = trackerDropdown.getValue();
             chibiManager.setMonitoringTracker(selectedTracker);
 
-            cpuStatusLabel.setVisible(selectedTracker.equals("CPU"));
+            cpuStatusLabel.setVisible(selectedTracker.equals("CPU Temp"));
             ramStatusLabel.setVisible(selectedTracker.equals("RAM Usage"));
+            gpuStatusLabel.setVisible(selectedTracker.equals("GPU Temp"));
+        });
+
+        ToggleButton themeToggle = new ToggleButton("Switch to Light Mode");
+        themeDropdown.setOnAction(event -> {
+            String selectedTheme = themeDropdown.getValue();
+            if (selectedTheme.equals("Dark Mode")) {
+                Scene scene = primaryStage.getScene();
+                scene.getStylesheets().remove(getClass().getResource("/light-theme.css").toExternalForm());
+                scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
+                themeToggle.setText("Switch to Light Mode");
+            } else {
+                Scene scene = primaryStage.getScene();
+                scene.getStylesheets().remove(getClass().getResource("/styles.css").toExternalForm());
+                scene.getStylesheets().add(getClass().getResource("/light-theme.css").toExternalForm());
+                themeToggle.setText("Switch to Dark Mode");
+            }
+            isDarkMode = !isDarkMode; // Toggle the mode
         });
 
 
         settingsTab.setContent(new VBox(
+                new Label ("Select Theme: "), themeDropdown,
                 new Label("Select Chibi Appearance: "), chibiComboBox,
-                new Label("Select Chibi Tracker: "), trackerDropdown
-                ));
+                new Label("Select Chibi Tracker: "), trackerDropdown,
+                disclaimerLabel
+        ));
         settingsTab.setClosable(false);
 
         tabPane.getTabs().add(settingsTab);
@@ -110,7 +153,7 @@ public class SystemInfoUI extends Application {
         BorderPane root = new BorderPane();
         root.setTop(tabPane);
         root.setCenter(imageView);  // Chibi will be displayed in the center
-        VBox layout = new VBox(10, imageView, ramStatusLabel , cpuStatusLabel);
+        VBox layout = new VBox(10, imageView, ramStatusLabel , cpuStatusLabel, gpuStatusLabel);
         root.setCenter(layout);  // Set VBox layout including image and status label
 
         // On/Off Buttons
@@ -141,6 +184,11 @@ public class SystemInfoUI extends Application {
 
         // Add buttons to the bottom
         root.setBottom(new VBox(10, onButton, offButton));
+
+
+
+
+
 
         // SCENE SETUP
         Scene scene = new Scene(root, 800, 600);

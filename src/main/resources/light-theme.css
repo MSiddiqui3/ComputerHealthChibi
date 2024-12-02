@@ -1,0 +1,42 @@
+/* Light Theme */
+
+/* Background of the main UI */
+.root {
+    -fx-background-color: #FFFFFF; /* White background */
+}
+
+/* Style for labels */
+.label {
+    -fx-font-size: 14px;
+    -fx-text-fill: black; /* Black text */
+    -fx-font-family: 'Arial';
+}
+
+/* Style for buttons */
+.button {
+    -fx-background-color: #E0E0E0, linear-gradient(#FFFFFF, #CCCCCC); /* Light gradient */
+    -fx-text-fill: black;
+    -fx-border-color: gray; /* Gray border */
+    -fx-border-width: 2px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-padding: 5px 10px;
+}
+
+/* Default style for tabs */
+.tab {
+    -fx-background-color: #F5F5F5; /* Light gray */
+    -fx-text-fill: black;
+}
+
+/* Styling for the selected tab */
+.tab:selected {
+    -fx-background-color: #D0D0D0; /* Darker gray */
+    -fx-text-fill: black;
+}
+
+/* ScrollPane styling */
+.scroll-pane {
+    -fx-background-color: #FFFFFF; /* White */
+}
+
