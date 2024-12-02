@@ -20,6 +20,8 @@ public class SystemInfoUI extends Application {
     Label storageLabel = new Label();
     Label batteryLabel = new Label();
 
+    private boolean isDarkMode = true; // Track current theme
+
     HardwareMonitorData hardwareMonitorData = new HardwareMonitorData();
 
     // Chibi Avatar
@@ -31,6 +33,8 @@ public class SystemInfoUI extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+
+
         // Initialize ChibiManager with imageView and ramStatusLabel
         Label ramStatusLabel = new Label("");
         Label cpuStatusLabel = new Label("");
@@ -55,6 +59,11 @@ public class SystemInfoUI extends Application {
         Tab batteryTab = new Tab("BATTERY", new VBox(batteryLabel));
         batteryTab.setClosable(false);
 
+        // Integrate Metrics tab
+        Metrics metrics = new Metrics(); // Instance of the Metrics class
+        Tab metricsTab = new Tab("Metrics", metrics.createMetricsChart());
+        metricsTab.setClosable(false);
+
         String gpuTemperature = hardwareMonitorData.getGpuTemperature();
         String gpuFanSpeed = hardwareMonitorData.getGpuFanSpeed();
         String cpuVoltage = hardwareMonitorData.getCpuVoltage();
@@ -74,7 +83,7 @@ public class SystemInfoUI extends Application {
         Tab networkTab = new Tab("NETWORK", networkScrollPane);
 
         networkTab.setClosable(false);
-        tabPane.getTabs().addAll(cpuTab, gpuTab, ramTab, storageTab, networkTab, batteryTab);
+        tabPane.getTabs().addAll(cpuTab, gpuTab, ramTab, storageTab, networkTab, batteryTab, metricsTab);
 
         // SETTINGS TAB
         Tab settingsTab = new Tab("Settings");
@@ -84,6 +93,10 @@ public class SystemInfoUI extends Application {
 
         ComboBox<String> trackerDropdown = new ComboBox<>();
         trackerDropdown.getItems().addAll("RAM Usage", "CPU Temp", "GPU Temp");
+
+        ComboBox<String> themeDropdown = new ComboBox<>();
+        themeDropdown.getItems().addAll("Dark Mode", "Light Mode");
+
 
         //DISCLAIMER TEXT BOX
         Label disclaimerLabel = new Label("DISCLAIMER: This application works best in conjunction with Open Hardware Monitor "
@@ -108,12 +121,30 @@ public class SystemInfoUI extends Application {
             gpuStatusLabel.setVisible(selectedTracker.equals("GPU Temp"));
         });
 
+        ToggleButton themeToggle = new ToggleButton("Switch to Light Mode");
+        themeDropdown.setOnAction(event -> {
+            String selectedTheme = themeDropdown.getValue();
+            if (selectedTheme.equals("Dark Mode")) {
+                Scene scene = primaryStage.getScene();
+                scene.getStylesheets().remove(getClass().getResource("/light-theme.css").toExternalForm());
+                scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
+                themeToggle.setText("Switch to Light Mode");
+            } else {
+                Scene scene = primaryStage.getScene();
+                scene.getStylesheets().remove(getClass().getResource("/styles.css").toExternalForm());
+                scene.getStylesheets().add(getClass().getResource("/light-theme.css").toExternalForm());
+                themeToggle.setText("Switch to Dark Mode");
+            }
+            isDarkMode = !isDarkMode; // Toggle the mode
+        });
+
 
         settingsTab.setContent(new VBox(
+                new Label ("Select Theme: "), themeDropdown,
                 new Label("Select Chibi Appearance: "), chibiComboBox,
                 new Label("Select Chibi Tracker: "), trackerDropdown,
                 disclaimerLabel
-                ));
+        ));
         settingsTab.setClosable(false);
 
         tabPane.getTabs().add(settingsTab);
@@ -153,6 +184,11 @@ public class SystemInfoUI extends Application {
 
         // Add buttons to the bottom
         root.setBottom(new VBox(10, onButton, offButton));
+
+
+
+
+
 
         // SCENE SETUP
         Scene scene = new Scene(root, 800, 600);
