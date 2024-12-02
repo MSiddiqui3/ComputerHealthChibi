@@ -1,7 +1,10 @@
+package view;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.StringBinding;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
@@ -9,8 +12,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import model.*;
+import viewmodel.viewModel;
 
 public class SystemInfoUI extends Application {
+    viewModel vModel = new viewModel();
 
     // Labels to display system information
     Label gpuLabel = new Label();
@@ -31,7 +37,7 @@ public class SystemInfoUI extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        // Initialize ChibiManager with imageView and ramStatusLabel
+        // Initialize view.ChibiManager with imageView and ramStatusLabel
         Label ramStatusLabel = new Label("");
         Label cpuStatusLabel = new Label("");
         Label gpuStatusLabel = new Label("");
@@ -59,10 +65,22 @@ public class SystemInfoUI extends Application {
         String gpuFanSpeed = hardwareMonitorData.getGpuFanSpeed();
         String cpuVoltage = hardwareMonitorData.getCpuVoltage();
 
+        // CREATE STRING BINDINGS FROM RAW DATA PROPERTIES
+        StringBinding formattedCpuInfo = Bindings.createStringBinding(
+                () -> String.format(
+                        "CPU Information:\nName: %s\nPhysical Cores: %d\nLogical Cores: %d\nCPU Temperature: %.2f °C",
+                        vModel.cpuNameProperty().get(),
+                        vModel.cpuPhysicalCoresProperty().get(),
+                        vModel.cpuLogicalCoresProperty().get(),
+                        vModel.cpuTemperatureProperty().get()
+                )
+        );
+
         // INITIAL SYSTEM INFO
         gpuLabel.setText(GpuInfo.getGpuInfo() + "Temperature: " + gpuTemperature + "\n" + "Fan Speed: " + gpuFanSpeed);
         ramLabel.setText(RamInfo.getRamInfo());
-        cpuLabel.setText(CpuInfo.getCpuInfo() + "CPU Voltage: " + cpuVoltage);
+//        cpuLabel.setText(CpuInfo.getCpuInfo() + "CPU Voltage: " + cpuVoltage);
+        cpuLabel.textProperty().bind(formattedCpuInfo);
         storageLabel.setText(StorageInfo.getStorageInfo());
         networkLabel.setText(NetworkInfo.getNetworkInfo());
         batteryLabel.setText(BatteryInfo.getBatteryInfo());
@@ -167,7 +185,8 @@ public class SystemInfoUI extends Application {
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), event -> {
             gpuLabel.setText(GpuInfo.getGpuInfo() + "Temperature: " + gpuTemperature + "\n" + "Fan Speed: " + gpuFanSpeed);
             ramLabel.setText(RamInfo.getRamInfo());
-            cpuLabel.setText(CpuInfo.getCpuInfo() + "CPU Voltage: " + cpuVoltage);
+//            cpuLabel.setText(CpuInfo.getCpuInfo() + "CPU Voltage: " + cpuVoltage);
+            vModel.update();
             storageLabel.setText(StorageInfo.getStorageInfo());
             networkLabel.setText(NetworkInfo.getNetworkInfo());
             batteryLabel.setText(BatteryInfo.getBatteryInfo());

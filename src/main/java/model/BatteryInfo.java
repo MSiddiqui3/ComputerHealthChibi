@@ -1,3 +1,5 @@
+package model;
+
 import oshi.SystemInfo;
 import oshi.hardware.HardwareAbstractionLayer;
 import oshi.hardware.PowerSource;
@@ -5,6 +7,7 @@ import oshi.hardware.PowerSource;
 import java.util.List;
 
 public class BatteryInfo {
+
 
     public static String getBatteryInfo() {
         SystemInfo systemInfo = new SystemInfo();
