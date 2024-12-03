@@ -77,6 +77,7 @@ public class SystemInfoUI extends Application {
 
 
         // CREATE STRING BINDINGS FROM RAW DATA PROPERTIES
+        // CPU string binding
         StringBinding formattedCpuInfo = Bindings.createStringBinding(
                 () -> String.format(
                         "CPU Information:\nName: %s\nPhysical Cores: %d\nLogical Cores: %d\nCPU Temperature: %.2f °C",
@@ -91,9 +92,24 @@ public class SystemInfoUI extends Application {
                 vModel.cpuTemperatureProperty()
         );
 
+        // RAM string binding
+        StringBinding formattedRamInfo = Bindings.createStringBinding(
+                () -> String.format(
+                        "RAM Information:\nTotal RAM: %d MB\nUsed RAM: %d MB\nFree RAM: %d MB",
+                        vModel.ramTotalProperty().get() / (1024 * 1024),
+                        vModel.ramUsedProperty().get()  / (1024 * 1024),
+                        vModel.ramFreeProperty().get()  / (1024 * 1024)
+                        ),
+                vModel.ramTotalProperty(),
+                vModel.ramUsedProperty(),
+                vModel.ramFreeProperty()
+        );
+
+
         // INITIAL SYSTEM INFO
         gpuLabel.setText(GpuInfo.getGpuInfo() + "Temperature: " + gpuTemperature + "\n" + "Fan Speed: " + gpuFanSpeed);
-        ramLabel.setText(RamInfo.getRamInfo());
+//        ramLabel.setText(RamInfo.getRamInfo());
+        ramLabel.textProperty().bind(formattedRamInfo);
 //        cpuLabel.setText(CpuInfo.getCpuInfo() + "CPU Voltage: " + cpuVoltage);
         cpuLabel.textProperty().bind(formattedCpuInfo);
         storageLabel.setText(StorageInfo.getStorageInfo());
@@ -186,9 +202,14 @@ public class SystemInfoUI extends Application {
 
         // Add action to "On" button
         onButton.setOnAction(event -> {
+            // RE-BIND LABELS
+            cpuLabel.textProperty().bind(formattedCpuInfo);
+            ramLabel.textProperty().bind(formattedRamInfo);
+
+            // SET LABELS TO ON
             gpuLabel.setText(GpuInfo.getGpuInfo() + "Temperature: " + gpuTemperature + "\n" + "Fan Speed: " + gpuFanSpeed);
-            ramLabel.setText(RamInfo.getRamInfo());
-            cpuLabel.setText(CpuInfo.getCpuInfo() + "CPU Voltage: " + cpuVoltage);
+//            ramLabel.setText(RamInfo.getRamInfo());
+//            cpuLabel.setText(CpuInfo.getCpuInfo() + "CPU Voltage: " + cpuVoltage);
             storageLabel.setText(StorageInfo.getStorageInfo());
             networkLabel.setText(NetworkInfo.getNetworkInfo());
             batteryLabel.setText(BatteryInfo.getBatteryInfo());
@@ -197,6 +218,11 @@ public class SystemInfoUI extends Application {
 
         // Add action to "Off" button
         offButton.setOnAction(event -> {
+            // UNBIND LABELS
+            cpuLabel.textProperty().unbind();
+            ramLabel.textProperty().unbind();
+
+            // SET LABELS TO OFF
             gpuLabel.setText("GPU System Monitoring Off");
             ramLabel.setText("RAM System Monitoring Off");
             cpuLabel.setText("CPU System Monitoring Off");
@@ -225,10 +251,10 @@ public class SystemInfoUI extends Application {
 
         // REALTIME UPDATES (2-second interval)
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), event -> {
-            gpuLabel.setText(GpuInfo.getGpuInfo() + "Temperature: " + gpuTemperature + "\n" + "Fan Speed: " + gpuFanSpeed);
-            ramLabel.setText(RamInfo.getRamInfo());
-//            cpuLabel.setText(CpuInfo.getCpuInfo() + "CPU Voltage: " + cpuVoltage);
             vModel.update();
+            gpuLabel.setText(GpuInfo.getGpuInfo() + "Temperature: " + gpuTemperature + "\n" + "Fan Speed: " + gpuFanSpeed);
+//            ramLabel.setText(RamInfo.getRamInfo());
+//            cpuLabel.setText(CpuInfo.getCpuInfo() + "CPU Voltage: " + cpuVoltage);
             storageLabel.setText(StorageInfo.getStorageInfo());
             networkLabel.setText(NetworkInfo.getNetworkInfo());
             batteryLabel.setText(BatteryInfo.getBatteryInfo());

@@ -10,19 +10,20 @@ import oshi.hardware.Sensors;
 
 public class CpuInfo extends SysObj {
 
-//    Shared Objects
+//    SHARED OBJECTS
     private static final SystemInfo SYS_INFO = Shared.SYSTEM_INFO;
-    private static final CentralProcessor CPU = Shared.CENTRAL_PROCESSOR;
     private static final Sensors SENSORS = Shared.SENSORS;
+    private static final CentralProcessor CPU = Shared.CENTRAL_PROCESSOR;
 
-//    Creates JavaFX Properties
+
+//    JAVAFX PROPERTIES
     private static final ReadOnlyStringWrapper name = new ReadOnlyStringWrapper();
     private static final ReadOnlyIntegerWrapper physicalCores = new ReadOnlyIntegerWrapper();
     private static final ReadOnlyIntegerWrapper logicalCores = new ReadOnlyIntegerWrapper();
     private static final ReadOnlyDoubleWrapper temperature = new ReadOnlyDoubleWrapper();
 
 
-//    Methods to return value of JavaFX Properties
+//    JAVAFX PROPERTY GETTERS
     public static ReadOnlyStringProperty nameProperty() {
         return name.getReadOnlyProperty();
     }
@@ -39,7 +40,7 @@ public class CpuInfo extends SysObj {
         return temperature.getReadOnlyProperty();
     }
 
-//    Update the JavaFX Properties
+//    UPDATE JAVAFX PROPERTIES
     public static void update() {
         name.set(CPU.getProcessorIdentifier().getName());
         physicalCores.set(CPU.getPhysicalProcessorCount());
