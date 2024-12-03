@@ -69,10 +69,10 @@ The application can run without OpenHardwareMonitor but various information may 
    javafx.controls,javafx.fxml
 5. Run the code
 
-###As of 12/1/2024 a jar version is available in the github
+### As of 12/1/2024 a jar version is available in the github
 The jar file should be able to get downloaded and run on its own. 
 
-#Contributors
+# Contributors
 * **Jason Urquilla-Martinez** 
 * **Augustine Ajua** 
 * **Andrew Nosa** 
