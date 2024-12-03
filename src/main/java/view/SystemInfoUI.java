@@ -74,6 +74,8 @@ public class SystemInfoUI extends Application {
         String gpuFanSpeed = hardwareMonitorData.getGpuFanSpeed();
         String cpuVoltage = hardwareMonitorData.getCpuVoltage();
 
+
+
         // CREATE STRING BINDINGS FROM RAW DATA PROPERTIES
         StringBinding formattedCpuInfo = Bindings.createStringBinding(
                 () -> String.format(
@@ -82,7 +84,11 @@ public class SystemInfoUI extends Application {
                         vModel.cpuPhysicalCoresProperty().get(),
                         vModel.cpuLogicalCoresProperty().get(),
                         vModel.cpuTemperatureProperty().get()
-                )
+                ),
+                vModel.cpuNameProperty(),
+                vModel.cpuPhysicalCoresProperty(),
+                vModel.cpuLogicalCoresProperty(),
+                vModel.cpuTemperatureProperty()
         );
 
         // INITIAL SYSTEM INFO

@@ -4,10 +4,10 @@ import javafx.beans.property.*;
 import model.CpuInfo;
 
 public class viewModel {
-    private final StringProperty cpuName = new SimpleStringProperty();
-    private final IntegerProperty cpuPhysicalCores = new SimpleIntegerProperty();
-    private final IntegerProperty cpuLogicalCores = new SimpleIntegerProperty();
-    private final DoubleProperty cpuTemperature = new SimpleDoubleProperty();
+    private final ReadOnlyStringWrapper cpuName = new ReadOnlyStringWrapper();
+    private final ReadOnlyIntegerWrapper cpuPhysicalCores = new ReadOnlyIntegerWrapper();
+    private final ReadOnlyIntegerWrapper cpuLogicalCores = new ReadOnlyIntegerWrapper();
+    private final ReadOnlyDoubleWrapper cpuTemperature = new ReadOnlyDoubleWrapper();
 
     public viewModel() {
         CpuInfo.update();
@@ -18,20 +18,20 @@ public class viewModel {
         CpuInfo.update();
     }
 
-    public StringProperty cpuNameProperty() {
-        return cpuName;
+    public ReadOnlyStringProperty cpuNameProperty() {
+        return cpuName.getReadOnlyProperty();
     }
 
-    public IntegerProperty cpuPhysicalCoresProperty() {
-        return cpuPhysicalCores;
+    public ReadOnlyIntegerProperty cpuPhysicalCoresProperty() {
+        return cpuPhysicalCores.getReadOnlyProperty();
     }
 
-    public IntegerProperty cpuLogicalCoresProperty() {
-        return cpuLogicalCores;
+    public ReadOnlyIntegerProperty cpuLogicalCoresProperty() {
+        return cpuLogicalCores.getReadOnlyProperty();
     }
 
-    public DoubleProperty cpuTemperatureProperty() {
-        return cpuTemperature;
+    public ReadOnlyDoubleProperty cpuTemperatureProperty() {
+        return cpuTemperature.getReadOnlyProperty();
     }
 
     public void bind() {
