@@ -73,8 +73,8 @@ The application can run without OpenHardwareMonitor but various information may 
 The jar file should be able to get downloaded and run on its own. 
 
 #Contributors
-* **Jason Urquilla-Martinez** *
-* **Augustine Ajua** *
-* **Andrew Nosa** *
-* **Mohammed Siddiqui** *
+* **Jason Urquilla-Martinez** 
+* **Augustine Ajua** 
+* **Andrew Nosa** 
+* **Mohammed Siddiqui** 
    
