@@ -124,7 +124,7 @@ public class ChibiManager{
                 setChibiImage(chibiNormalImages.get(currentChibi));  // Switch to normal chibi
                 ramStatusLabel.setText("RAM usage is Stable");
             }
-             else {
+            else {
                 setChibiImage(chibiHeavyImages.get(currentChibi));  // Switch to heavyload chibi
                 ramStatusLabel.setText("RAM usage is High");
             }
