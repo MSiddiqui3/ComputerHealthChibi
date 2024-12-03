@@ -8,11 +8,8 @@
 
 - [Features](#features)
 - [How It Works](#how-it-works)
-- [Getting Started](#getting-started)
-- [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Contributors](#contributors)
-- [License](#license)
 
 ---
 
@@ -48,9 +45,36 @@ The application leverages [OpenHardwareMonitor](https://openhardwaremonitor.org/
 The application can run without OpenHardwareMonitor but various information may not be able to get detected. 
 ---
 
-## Getting Started
 
-### Prerequisites
+### Installation
 
-1. Download and install [OpenHardwareMonitor](https://openhardwaremonitor.org/downloads/).
-2. Ensure Java is installed on your system. (Minimum Java version: 11)
+1. Clone The master branch of this repository
+   ```
+   git clone https://github.com/MSiddiqui3/ComputerHealthChibi
+   ```
+3. Download and install [OpenHardwareMonitor](https://openhardwaremonitor.org/downloads/).
+4. This step is not required but some users may find issues regarding VM options in their IDE specifially IntelliJ if this is the case the next steps are recommended
+   Inside the SDK folder, locate the lib directory, which contains all the required .jar files.
+   Open the project in IntelliJ IDEA.
+   Click on the dropdown menu in the top-right corner (next to the "Run" button) and select Edit Configurations
+   In the Run/Debug Configurations window, select your application's configuration (e.g., main).
+
+   Locate the VM options field. If it’s not visible, click on the "Modify options" dropdown and enable Add VM options.
+
+   Add the "lib" javaFX sdk file path to the VM options field:
+   Click Apply and then OK to save the changes
+
+
+   This is the correct format: --module-path "/opt/javafx-sdk/lib" --add-modules
+   javafx.controls,javafx.fxml
+5. Run the code
+
+###As of 12/1/2024 a jar version is available in the github
+The jar file should be able to get downloaded and run on its own. 
+
+#Contributors
+* **Jason Urquilla-Martinez** *
+* **Augustine Ajua** *
+* **Andrew Nosa** *
+* **Mohammed Siddiqui** *
+   
