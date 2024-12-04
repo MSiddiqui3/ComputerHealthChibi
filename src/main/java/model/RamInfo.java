@@ -55,17 +55,17 @@ public class RamInfo  {
         RamInfo.freeMemory.set(freeMemory);
     }
 
-    public static String getRamInfo() {
-        long totalMemory = osBean.getTotalPhysicalMemorySize();
-        long freeMemory = osBean.getFreePhysicalMemorySize();
-        long usedMemory = totalMemory - freeMemory;
-
-
-        return "RAM Information:\n" +
-                "Total RAM: " + (totalMemory / (1024 * 1024)) + " MB\n" +
-                "Used RAM: " + (usedMemory / (1024 * 1024)) + " MB\n" +
-                "Free RAM: " + (freeMemory / (1024 * 1024)) + " MB";
-    }
+//    public static String getRamInfo() {
+//        long totalMemory = osBean.getTotalPhysicalMemorySize();
+//        long freeMemory = osBean.getFreePhysicalMemorySize();
+//        long usedMemory = totalMemory - freeMemory;
+//
+//
+//        return "RAM Information:\n" +
+//                "Total RAM: " + (totalMemory / (1024 * 1024)) + " MB\n" +
+//                "Used RAM: " + (usedMemory / (1024 * 1024)) + " MB\n" +
+//                "Free RAM: " + (freeMemory / (1024 * 1024)) + " MB";
+//    }
 
     public static long getTotalMemory() {
         return osBean.getTotalPhysicalMemorySize(); // Total system memory in bytes

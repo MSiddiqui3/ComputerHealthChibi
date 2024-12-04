@@ -4,7 +4,6 @@ import javafx.beans.property.*;
 import model.CpuInfo;
 import model.DiscObj;
 import model.RamInfo;
-import model.StorageInfo;
 
 import java.util.LinkedList;
 import java.util.List;

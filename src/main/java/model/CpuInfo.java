@@ -48,24 +48,24 @@ public class CpuInfo extends SysObj {
         temperature.set(SENSORS.getCpuTemperature());
     }
 
-    public static String getCpuInfo() {
-
-
-        StringBuilder cpuInfo = new StringBuilder();
-        cpuInfo.append("CPU Information:\n");
-        cpuInfo.append("Name: ").append(CPU.getProcessorIdentifier().getName()).append("\n");
-        cpuInfo.append("Physical Cores: ").append(CPU.getPhysicalProcessorCount()).append("\n");
-        cpuInfo.append("Logical Cores: ").append(CPU.getLogicalProcessorCount()).append("\n");
-
-        double temperature = SENSORS.getCpuTemperature();
-        if (temperature > 0) {
-            cpuInfo.append("CPU Temperature: ").append(temperature).append(" °C\n");
-        } else {
-            cpuInfo.append("CPU Temperature: Data not available\n");
-        }
-
-
-
-        return cpuInfo.toString();
-    }
+//    public static String getCpuInfo() {
+//
+//
+//        StringBuilder cpuInfo = new StringBuilder();
+//        cpuInfo.append("CPU Information:\n");
+//        cpuInfo.append("Name: ").append(CPU.getProcessorIdentifier().getName()).append("\n");
+//        cpuInfo.append("Physical Cores: ").append(CPU.getPhysicalProcessorCount()).append("\n");
+//        cpuInfo.append("Logical Cores: ").append(CPU.getLogicalProcessorCount()).append("\n");
+//
+//        double temperature = SENSORS.getCpuTemperature();
+//        if (temperature > 0) {
+//            cpuInfo.append("CPU Temperature: ").append(temperature).append(" °C\n");
+//        } else {
+//            cpuInfo.append("CPU Temperature: Data not available\n");
+//        }
+//
+//
+//
+//        return cpuInfo.toString();
+//    }
 }
