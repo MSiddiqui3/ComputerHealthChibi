@@ -1,17 +1,23 @@
 package model;
 
-import oshi.SystemInfo;
 import oshi.hardware.HWDiskStore;
 import oshi.hardware.HardwareAbstractionLayer;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class StorageInfo {
+
+    // SHARED OBJECTS
+    private static final HardwareAbstractionLayer HAL = Shared.HARDWARE_ABSTRACTION_LAYER;
+
+
+    // NO update() method needed, viewModel.update() updates DiscObj's
+
+
     public static String getStorageInfo() {
-        SystemInfo systemInfo = new SystemInfo();
-        HardwareAbstractionLayer hal = systemInfo.getHardware();
         StringBuilder storageDetails = new StringBuilder();
-        List<HWDiskStore> diskStores = hal.getDiskStores();
+        List<HWDiskStore> diskStores = HAL.getDiskStores();
 
         for (HWDiskStore disk : diskStores) {
             storageDetails.append("Drive: ").append(disk.getModel()).append("\n")

@@ -2,7 +2,12 @@ package viewmodel;
 
 import javafx.beans.property.*;
 import model.CpuInfo;
+import model.DiscObj;
 import model.RamInfo;
+import model.StorageInfo;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class viewModel {
 
@@ -17,11 +22,23 @@ public class viewModel {
     private final ReadOnlyLongWrapper ramFree = new ReadOnlyLongWrapper();
     private final ReadOnlyLongWrapper ramUsed = new ReadOnlyLongWrapper();
 
+    // STORAGE LIST
+    // The List obj's contain storage properties
+    public final List<DiscWrapper> DISC_WRAP_LIST = new LinkedList<DiscWrapper>();
+
+
 
     // CONSTRUCTOR
     public viewModel() {
         CpuInfo.update();
         RamInfo.update();
+
+        // Create DiscWrapper objects
+        for (DiscObj discObj : DiscObj.LIST) {
+            DiscWrapper discWrap = new DiscWrapper(discObj);
+            DISC_WRAP_LIST.add(discWrap);
+            discWrap.update();
+        }
         bind();
     }
 
@@ -36,6 +53,12 @@ public class viewModel {
         ramTotal.bind(RamInfo.totalMemoryProperty());
         ramFree.bind(RamInfo.freeMemoryProperty());
         ramUsed.bind(RamInfo.usedMemoryProperty());
+
+
+        // Bind DiscWrappers to contained DiscObj properties
+        for (DiscWrapper discWrap : DISC_WRAP_LIST) {
+            discWrap.bind();
+        }
     }
 
 
@@ -43,6 +66,11 @@ public class viewModel {
     public void update() {
         CpuInfo.update();
         RamInfo.update();
+
+        // Update DiscWrappers
+        for (DiscWrapper discWrp : DISC_WRAP_LIST) {
+            discWrp.update();
+        }
     }
 
 

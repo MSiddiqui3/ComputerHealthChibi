@@ -3,6 +3,7 @@ package view;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.scene.Scene;
@@ -13,7 +14,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.*;
+import viewmodel.DiscWrapper;
 import viewmodel.viewModel;
+
+import java.util.stream.Stream;
 
 public class SystemInfoUI extends Application {
     viewModel vModel = new viewModel();
@@ -77,6 +81,7 @@ public class SystemInfoUI extends Application {
 
 
         // CREATE STRING BINDINGS FROM RAW DATA PROPERTIES
+
         // CPU string binding
         StringBinding formattedCpuInfo = Bindings.createStringBinding(
                 () -> String.format(
@@ -105,6 +110,36 @@ public class SystemInfoUI extends Application {
                 vModel.ramFreeProperty()
         );
 
+        // STORAGE DISCS string binding
+        StringBinding cumulativeDiscInfo = Bindings.createStringBinding(() -> {
+
+            // Stringbuilder, concatenates formatted data for all drives.
+            StringBuilder sb = new StringBuilder();
+            for (DiscWrapper discWrap : vModel.DISC_WRAP_LIST) {
+                sb.append(String.format(
+                        "Drive: %s\nSerial: %s\nSize: %d GB\nReads: %d\nWrites: %d\nFree Space: %d GB\n-----------------------------------\n",
+                        discWrap.nameProperty().get(),
+                        discWrap.serialProperty().get(),
+                        discWrap.sizeProperty().get() / (1024 * 1024 * 1024),
+                        discWrap.readsProperty().get(),
+                        discWrap.writesProperty().get(),
+                        discWrap.freeSpaceProperty().get() / (1024 * 1024 * 1024)
+                ));
+            }
+            return sb.toString();
+
+            // For each discWrapper in the list, this exposes
+            // then binds their properties to the string binding.
+        }, vModel.DISC_WRAP_LIST.stream()
+                .flatMap(discWrap -> Stream.of(
+                        discWrap.nameProperty(),
+                        discWrap.serialProperty(),
+                        discWrap.sizeProperty(),
+                        discWrap.readsProperty(),
+                        discWrap.writesProperty(),
+                        discWrap.freeSpaceProperty()
+                ))
+                .toArray(Observable[]::new));
 
         // INITIAL SYSTEM INFO
         gpuLabel.setText(GpuInfo.getGpuInfo() + "Temperature: " + gpuTemperature + "\n" + "Fan Speed: " + gpuFanSpeed);
@@ -112,7 +147,8 @@ public class SystemInfoUI extends Application {
         ramLabel.textProperty().bind(formattedRamInfo);
 //        cpuLabel.setText(CpuInfo.getCpuInfo() + "CPU Voltage: " + cpuVoltage);
         cpuLabel.textProperty().bind(formattedCpuInfo);
-        storageLabel.setText(StorageInfo.getStorageInfo());
+//        storageLabel.setText(StorageInfo.getStorageInfo());
+        storageLabel.textProperty().bind(cumulativeDiscInfo);
         networkLabel.setText(NetworkInfo.getNetworkInfo());
         batteryLabel.setText(BatteryInfo.getBatteryInfo());
 
@@ -205,12 +241,13 @@ public class SystemInfoUI extends Application {
             // RE-BIND LABELS
             cpuLabel.textProperty().bind(formattedCpuInfo);
             ramLabel.textProperty().bind(formattedRamInfo);
+            storageLabel.textProperty().bind(cumulativeDiscInfo);
 
             // SET LABELS TO ON
             gpuLabel.setText(GpuInfo.getGpuInfo() + "Temperature: " + gpuTemperature + "\n" + "Fan Speed: " + gpuFanSpeed);
 //            ramLabel.setText(RamInfo.getRamInfo());
 //            cpuLabel.setText(CpuInfo.getCpuInfo() + "CPU Voltage: " + cpuVoltage);
-            storageLabel.setText(StorageInfo.getStorageInfo());
+//            storageLabel.setText(StorageInfo.getStorageInfo());
             networkLabel.setText(NetworkInfo.getNetworkInfo());
             batteryLabel.setText(BatteryInfo.getBatteryInfo());
             chibiManager.setMonitoringTracker(trackerDropdown.getValue());
@@ -221,6 +258,7 @@ public class SystemInfoUI extends Application {
             // UNBIND LABELS
             cpuLabel.textProperty().unbind();
             ramLabel.textProperty().unbind();
+            storageLabel.textProperty().unbind();
 
             // SET LABELS TO OFF
             gpuLabel.setText("GPU System Monitoring Off");
@@ -250,12 +288,13 @@ public class SystemInfoUI extends Application {
 
 
         // REALTIME UPDATES (2-second interval)
+
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), event -> {
             vModel.update();
             gpuLabel.setText(GpuInfo.getGpuInfo() + "Temperature: " + gpuTemperature + "\n" + "Fan Speed: " + gpuFanSpeed);
 //            ramLabel.setText(RamInfo.getRamInfo());
 //            cpuLabel.setText(CpuInfo.getCpuInfo() + "CPU Voltage: " + cpuVoltage);
-            storageLabel.setText(StorageInfo.getStorageInfo());
+//            storageLabel.setText(StorageInfo.getStorageInfo());
             networkLabel.setText(NetworkInfo.getNetworkInfo());
             batteryLabel.setText(BatteryInfo.getBatteryInfo());
         }));
