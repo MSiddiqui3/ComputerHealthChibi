@@ -67,7 +67,9 @@ The application can run without OpenHardwareMonitor but various information may 
 
    This is the correct format: --module-path "/opt/javafx-sdk/lib" --add-modules
    javafx.controls,javafx.fxml
-5. Run the code
+5. If using OpenHardwareMonitor be sure to navigate to the Options tab then find the "Remote Web Server Option", be sure the port setting is setup on 8085 and then press run.
+   This ensures Computer Health Chibi correctly grabs the information from OpenHardwareMonitor when necessary. 
+7. Run the code
 
 ### As of 12/1/2024 a jar version is available in the github
 The jar file should be able to get downloaded and run on its own. 
